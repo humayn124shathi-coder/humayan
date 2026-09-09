@@ -1,0 +1,1182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#0f172a">
+<title>Parking Manager Pro</title>
+<style>
+*{box-sizing:border-box}
+:root{--navy:#0f172a;--blue:#2563eb;--bg:#f4f7fb;--card:#fff;--text:#172033;--muted:#64748b;--line:#e2e8f0;--green:#15803d;--red:#b91c1c}
+body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;-webkit-tap-highlight-color:transparent}
+button{font-family:inherit}.app{min-height:100vh;padding-bottom:60px}
+header{position:sticky;top:0;z-index:20;background:var(--navy);color:#fff;padding:calc(12px + env(safe-area-inset-top)) 15px 14px;box-shadow:0 4px 18px rgba(0,0,0,.16)}
+.top{display:flex;align-items:center;justify-content:space-between;max-width:1180px;margin:auto}
+.brand{display:flex;align-items:center;gap:10px;min-width:0}.logo{width:42px;height:42px;border-radius:12px;background:#fff;display:grid;place-items:center;overflow:hidden;color:var(--navy);font-weight:900}.logo img{width:100%;height:100%;object-fit:cover;display:none}
+.brand h1{font-size:17px;margin:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.brand small{display:block;color:#cbd5e1;font-size:11px;margin-top:2px}
+.user-btn{width:42px;height:42px;border:1px solid #334155;border-radius:50%;background:#1e293b;color:#fff;overflow:hidden;cursor:pointer;display:grid;place-items:center}.user-btn img{width:100%;height:100%;object-fit:cover;display:none}
+.search{display:flex;gap:7px;max-width:1180px;margin:12px auto 0}.search input{flex:1;min-width:0;height:46px;border:0;border-radius:11px;padding:0 14px;font-size:16px;outline:none}.search button{height:46px;padding:0 18px;border:0;border-radius:11px;background:var(--blue);color:#fff;font-weight:800;cursor:pointer}
+main{max-width:1180px;margin:auto;padding:6px 15px 15px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:17px;padding:16px;box-shadow:0 8px 24px rgba(15,23,42,.06);margin-bottom:14px}
+.title{font-size:14px;font-weight:900;margin:2px 2px 9px}
+.field{margin-bottom:12px}
+label{display:block;font-size:12px;font-weight:800;color:#475569;margin-bottom:6px}
+input[type=text],input[type=password],input[type=email],select{width:100%;height:46px;border:1px solid #d5dce6;border-radius:11px;padding:0 12px;font-size:15px;outline:0;background:#fff}
+.btn{height:46px;border:0;border-radius:11px;font-size:14px;font-weight:900;cursor:pointer;padding:0 15px}
+.full{width:100%}.primary{background:var(--navy);color:#fff}.blue{background:var(--blue);color:#fff}.light{background:#eef2f7;color:#334155}.red{background:var(--red);color:#fff}
+.msg{display:none;margin-top:10px;padding:10px;border-radius:10px;font-size:12px;font-weight:700}
+.ok{display:block;background:#ecfdf3;color:var(--green)}
+.err{display:block;background:#fef2f2;color:var(--red)}
+.result{display:none}.result.show{display:block}
+.vehicle{border:1px solid var(--line);border-radius:13px;padding:12px}
+.vtop{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.num{font-size:16px;font-weight:900}
+.place{margin-top:7px;font-size:13px;color:#475569}
+.formno{font-size:11px;background:#f1f5f9;padding:5px 8px;border-radius:20px;font-weight:800}
+#menu{display:none;position:fixed;inset:0;z-index:50;background:rgba(2,6,23,.48)}
+.drawer{position:absolute;right:0;top:0;width:min(340px,90vw);height:100%;background:#fff;padding:calc(18px + env(safe-area-inset-top)) 18px 25px;overflow:auto}
+.drawer-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.close{border:0;background:#eef2f7;width:36px;height:36px;border-radius:50%;font-size:20px;cursor:pointer}
+.profile-card{display:flex;align-items:center;gap:12px;background:#f8fafc;border-radius:14px;padding:12px;margin-bottom:10px}
+.avatar{width:54px;height:54px;border-radius:50%;background:#dbeafe;display:grid;place-items:center;overflow:hidden;font-size:24px;flex-shrink:0;cursor:pointer;position:relative}
+.avatar img{width:100%;height:100%;object-fit:cover;display:none}
+.menu-item{width:100%;text-align:left;border:0;background:#fff;padding:14px 10px;border-bottom:1px solid var(--line);font-size:14px;font-weight:800;color:#334155;cursor:pointer}
+.menu-item:active{background:#f1f5f9}
+.hidden{display:none!important}
+.desktop-control{display:block}
+@media(max-width:767px){.desktop-control{display:none!important}}
+.modal{display:none;position:fixed;inset:0;z-index:60;background:rgba(2,6,23,.5);padding:18px;align-items:center;justify-content:center}
+.modal.show{display:flex}
+.modal-box{width:min(680px,100%);max-height:92vh;overflow:auto;background:#fff;border-radius:18px;padding:18px}
+.list{display:grid;gap:8px}
+.list-item{display:flex;align-items:center;justify-content:space-between;border:1px solid var(--line);border-radius:12px;padding:11px;gap:10px}
+.empty{text-align:center;color:var(--muted);padding:14px;font-size:13px}
+.file{width:100%;font-size:13px}
+.a4{background:#fff;border:1px solid #cbd5e1;padding:20px;margin-top:15px;border-radius:12px}
+.a4-title{text-align:center;font-size:20px;font-weight:900;margin-bottom:4px}
+.a4-sub{text-align:center;color:#64748b;font-size:12px;margin-bottom:20px}
+.columns{display:grid;grid-template-columns:repeat(1,1fr);gap:10px;border:0}
+.col{border:1px solid #cbd5e1;border-radius:10px;overflow:hidden;background:#fafafa}
+.col-head{font-weight:900;text-align:center;padding:8px;background:#e2e8f0;border-bottom:1px solid #cbd5e1;font-size:13px}
+.cell{padding:10px;min-height:55px;font-size:12px}
+.cell b{display:block;font-size:13px;color:var(--navy)}
+.no-data{color:#999;text-align:center;padding-top:12px}
+.badge{padding:4px 8px;border-radius:6px;font-size:10px;font-weight:800}
+.badge.pending{background:#fef3c7;color:#b45309}
+.badge.approved{background:#ecfdf3;color:var(--green)}
+@media(min-width:768px){
+  .columns{grid-template-columns:repeat(3,1fr)}
+}
+@media(min-width:1024px){
+  .columns{grid-template-columns:repeat(9,1fr)}
+  .col{min-height:300px}
+}
+
+/* ===== V2 professional/user management additions ===== */
+.user-grid{display:grid;gap:10px}
+.user-row{border:1px solid var(--line);border-radius:14px;padding:12px;background:#fff}
+.user-main{display:flex;gap:11px;align-items:center}
+.user-photo{width:48px;height:48px;border-radius:50%;object-fit:cover;background:#e2e8f0;display:grid;place-items:center;flex:0 0 48px}
+.user-meta{min-width:0;flex:1}.user-meta b{display:block;font-size:14px}.user-meta small{display:block;color:var(--muted);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.perms{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.perm{display:flex;align-items:center;gap:5px;background:#f8fafc;border:1px solid var(--line);border-radius:9px;padding:7px 9px;font-size:11px;font-weight:800}
+.user-actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px}
+.search-users{margin-bottom:10px}
+.stat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
+.stat{border:1px solid var(--line);border-radius:12px;padding:10px;background:#f8fafc;text-align:center}.stat b{display:block;font-size:18px}.stat small{color:var(--muted);font-size:10px}
+.notice{padding:10px 12px;border-radius:10px;background:#fff7ed;border:1px solid #fed7aa;color:#9a3412;font-size:12px;margin-bottom:12px}
+@media(max-width:767px){
+  main{padding:10px}
+  .card{padding:12px;border-radius:14px}
+  .desktop-only{display:none!important}
+  .search input{font-size:15px}
+  .columns{grid-template-columns:repeat(1,1fr)}
+  .a4{padding:10px}
+}
+@media(min-width:768px){
+  .user-grid{grid-template-columns:repeat(2,1fr)}
+}
+@media(min-width:1100px){
+  .user-grid{grid-template-columns:repeat(3,1fr)}
+}
+
+/* ===== Professional responsive refinement ===== */
+.desktop-only{display:block}
+.desktop-summary{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin:0 0 12px}
+.dash-stat{background:#f8fafc;border:1px solid var(--line);border-radius:12px;padding:11px 12px}
+.dash-stat span{display:block;color:var(--muted);font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.04em}
+.dash-stat b{display:block;margin-top:4px;font-size:20px}
+.user-list-wrap{border:1px solid var(--line);border-radius:14px;overflow:hidden;background:#fff}
+.user-list-head,.user-list-row{display:grid;grid-template-columns:2fr 1.45fr 1.1fr 1.8fr 1.25fr;gap:10px;align-items:center;padding:10px 12px}
+.user-list-head{background:#f1f5f9;font-size:10px;font-weight:900;color:#475569;text-transform:uppercase;letter-spacing:.04em}
+.user-list-row{border-top:1px solid var(--line);font-size:12px}
+.user-list-row:hover{background:#f8fafc}
+.user-list-user{display:flex;align-items:center;gap:9px;min-width:0}
+.user-list-user .user-photo{width:38px;height:38px;flex-basis:38px}
+.user-list-user b,.user-list-user small{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.user-list-user small{color:var(--muted);margin-top:2px}
+.permission-line{display:flex;gap:5px;flex-wrap:wrap}
+.permission-chip{font-size:9px;font-weight:900;padding:4px 6px;border-radius:7px;background:#eef2ff}
+.list-actions{display:flex;gap:5px;flex-wrap:wrap}
+.list-actions .btn{height:32px;font-size:10px;padding:0 9px}
+.profile-edit-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.settings-section{border:1px solid var(--line);border-radius:13px;padding:12px;margin-bottom:12px;background:#fafcff}
+.settings-section h4{margin:0 0 9px;font-size:12px}
+.setup-code{background:#0f172a;color:#e2e8f0;border-radius:10px;padding:11px;overflow:auto;font:11px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace;white-space:pre-wrap}
+@media(max-width:767px){
+  .desktop-only{display:none!important}
+  .desktop-summary{display:none!important}
+  .mobile-core{display:block}
+  main{padding:8px}
+  .card{box-shadow:0 4px 14px rgba(15,23,42,.05)}
+  #addVehicleCard .title{font-size:13px}
+  #addVehicleCard .field label{font-size:11px}
+  #addVehicleCard input{height:44px;font-size:15px}
+  #addVehicleCard .btn{height:44px}
+  .search{margin-top:9px}
+  .search input{height:44px}
+  .search button{height:44px;padding:0 13px}
+  .profile-edit-grid{grid-template-columns:1fr}
+  .user-list-wrap{border:0}
+  .user-list-head{display:none}
+  .user-list-row{display:block;border:1px solid var(--line);border-radius:12px;margin-bottom:8px;padding:10px}
+  .user-list-row>div{margin-bottom:7px}
+  .list-actions{margin-bottom:0!important}
+}
+@media(min-width:768px){.mobile-core{display:block}}
+
+
+/* ===== V3 fixes and enhancements ===== */
+.clickable-stat{cursor:pointer;transition:transform .15s ease,box-shadow .15s ease}
+.clickable-stat:hover{transform:translateY(-1px);box-shadow:0 8px 18px rgba(15,23,42,.08)}
+.zone-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+.zone-chip{display:flex;align-items:center;justify-content:space-between;border:1px solid var(--line);border-radius:10px;padding:9px 10px;background:#fff;font-size:12px;font-weight:800}
+.zone-chip button{border:0;background:#fee2e2;color:#991b1b;border-radius:7px;padding:5px 7px;font-size:10px;font-weight:900;cursor:pointer}
+.data-table-wrap{overflow:auto;border:1px solid var(--line);border-radius:12px}
+.data-table{width:100%;border-collapse:collapse;font-size:12px;min-width:620px}
+.data-table th,.data-table td{padding:9px;border-bottom:1px solid var(--line);text-align:left;white-space:nowrap}
+.data-table th{background:#f1f5f9;font-size:10px;text-transform:uppercase}
+@media(max-width:767px){
+  main{padding-top:4px}
+  #searchResult{margin-top:6px}
+  #addVehicleCard{margin-top:0}
+  #addVehicleCard .field{margin-bottom:9px}
+  #addVehicleCard .field:first-of-type label{display:none}
+  #addVehicleCard .field:first-of-type input{height:42px}
+  .zone-grid{grid-template-columns:1fr}
+}
+
+
+/* V4 layout polish */
+main{padding-top:0!important}
+#searchResult:empty{display:none}
+#addVehicleCard{margin-top:0!important}
+#addVehicleCard .card-head{margin-bottom:12px}
+#addVehicleCard .fields{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+#addVehicleCard .field{margin-bottom:0}
+@media(max-width:767px){
+  header{margin-bottom:0!important}
+  main{padding-top:0!important}
+  #searchResult{margin-top:4px!important}
+  #addVehicleCard{margin-top:4px!important}
+  #addVehicleCard .fields{grid-template-columns:1fr;gap:8px}
+  #addVehicleCard .field{margin-bottom:0!important}
+  #addVehicleCard .field label{display:block!important}
+}
+
+</style>
+</head>
+<body>
+<div class="app">
+<header>
+ <div class="top">
+  <div class="brand">
+    <div class="logo" id="logoBox"><span>P</span><img id="logoImg" alt="Logo"></div>
+    <div><h1 id="parkingName">Parking Manager</h1><small id="parkingTagline">Vehicle Location</small></div>
+  </div>
+  <button class="user-btn" onclick="openMenu()" aria-label="Menu"><span id="userIcon">👤</span><img id="headerAvatar" alt="Avatar"></button>
+ </div>
+ <div class="search">
+   <input id="searchNumber" type="text" placeholder="Search exact vehicle number..." autocomplete="off">
+   <button onclick="searchVehicle()">Search</button>
+ </div>
+</header>
+
+<main>
+ <div id="searchResult" class="card result"></div>
+
+ <div class="card" id="addVehicleCard">
+  <div class="title">Add Vehicle (Auto Slot Assignment)</div>
+  <!-- Hidden Slot Number Input: Automatically determined from Vehicle Number or Sequence -->
+  <div class="field mobile-core"><label>Zone</label><select id="vehicleZone"></select></div>
+<div class="field"><label>Vehicle Number (Slot No. will be detected automatically, e.g. 3-DHK or slot number prefix)</label><input id="vehicleNumber" type="text" placeholder="e.g. 3-DHK-1234 or DHK-1234"></div>
+<div class="field mobile-core"><label>Vehicle Place / Slot Details</label><input id="vehiclePlace" type="text" placeholder="e.g. Place 3 / Slot 3"></div>
+  <button class="btn primary full" onclick="saveVehicle()">Save Vehicle to Slot</button>
+  <div id="saveMsg" class="msg"></div>
+ </div>
+
+ <div class="card desktop-only" id="desktopDashboardCard">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+    <div class="title" style="margin:0">A4 Vehicle Grid Layout (Slot 1 to 9)</div>
+    <button class="btn blue" style="height:36px;font-size:12px;padding:0 12px;" onclick="exportToExcel()">📥 Download Excel Backup</button>
+  </div>
+  <div class="desktop-summary">
+    <div class="dash-stat clickable-stat" onclick="showTotalVehicles()"><span>Total Vehicles</span><b id="dashTotal" onclick="showTotalVehicles()" style="cursor:pointer">0</b></div>
+    <div class="dash-stat clickable-stat" onclick="showTotalVehicles()"><span>Occupied Slots</span><b id="dashOccupied">0</b></div>
+    <div class="dash-stat clickable-stat" onclick="showZoneSummary()"><span>Total Zones</span><b id="dashZones" onclick="showZoneSummary()" style="cursor:pointer">0</b></div>
+    <div class="dash-stat"><span>Free Slots</span><b id="dashFree">9</b></div>
+    <div class="dash-stat"><span>Last Update</span><b id="dashUpdated">—</b></div>
+  </div>
+  <div class="a4">
+   <div class="a4-title" id="a4Name">Parking Manager</div>
+   <div class="a4-sub" id="a4Tag">Vehicle Location</div>
+   <div class="columns" id="a4Columns"></div>
+  </div>
+ </div>
+<div class="desktop-only" style="max-width:1180px;margin:0 auto;padding:0 15px;color:#64748b;font-size:10px;text-align:center">Parking Manager Pro • LocalStorage + optional Supabase cloud connection • Responsive desktop/mobile</div>
+</main>
+</div>
+
+<!-- Drawer Menu -->
+<div id="menu" onclick="if(event.target.id==='menu')closeMenu()">
+ <aside class="drawer">
+  <div class="drawer-head"><strong>Menu</strong><button class="close" onclick="closeMenu()">×</button></div>
+  <div class="profile-card">
+    <div class="avatar" onclick="triggerProfilePicChange()" title="Change Profile Picture"><span id="avatarIcon">👤</span><img id="avatarImg" alt="Profile"></div>
+    <div><strong id="profileName">Guest User</strong><small id="profileEmail">Not logged in</small><small style="color:var(--blue);cursor:pointer;margin-top:2px;" onclick="triggerProfilePicChange()">Change Photo</small></div>
+    <input type="file" id="profilePicInput" class="hidden" accept="image/*" onchange="updateProfilePic(this)">
+  </div>
+  <button class="menu-item" onclick="showProfile()">👤 My Profile & Account</button>
+  <button class="menu-item" onclick="showVehicleList()">🚗 Vehicle List</button>
+  <button id="settingsMenuBtn" class="menu-item desktop-control hidden" onclick="showSettings()">⚙️ Admin Settings & Design</button>
+  <button id="cloudMenuBtn" class="menu-item desktop-control hidden" onclick="showCloudGuide()">☁️ Supabase & Netlify Setup</button>
+  <button id="usersMenuBtn" class="menu-item desktop-control hidden" onclick="showUsersAdmin()">👥 Manage Users & Approvals</button>
+  <button id="rolesMenuBtn" class="menu-item hidden desktop-control" onclick="showUserRulesManager()">📋 User Rules / Roles</button>
+  <button id="zonesMenuBtn" class="menu-item hidden desktop-control" onclick="showZoneManager()">📍 Manage Zones</button>
+  <button id="helpAdminBtn" class="menu-item desktop-control hidden" onclick="showHelpAdmin()">📩 Help Messages (<span id="msgCount">0</span>)</button>
+  <button class="menu-item desktop-control" onclick="showRegisterModal()">📝 New User Registration</button>
+  <button id="loginMenuBtn" class="menu-item" onclick="showLogin()">🔐 Login</button>
+  <button id="logoutItem" class="menu-item hidden" onclick="logout()">↪️ Logout</button>
+  <button class="menu-item desktop-control" onclick="showHelpUser()">❓ Help Center</button>
+ </aside>
+</div>
+
+<!-- Modal Container -->
+<div id="modal" class="modal">
+  <div class="modal-box">
+    <div class="drawer-head"><strong id="modalTitle">Menu</strong><button class="close" onclick="closeModal()">×</button></div>
+    <div id="modalContent"></div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
+<script>
+const KEY="parking_manager_records_v6", SETTINGS="parking_manager_settings_v6", SESSION="parking_manager_session_v6", USERS="parking_manager_users_v6", MESSAGES="parking_manager_msgs_v6", ADMIN_AUTH="parking_manager_admin_auth_v1";
+const $=id=>document.getElementById(id);
+
+function records(){try{return JSON.parse(localStorage.getItem(KEY))||[]}catch(e){return[]}}
+function saveRecords(x){localStorage.setItem(KEY,JSON.stringify(x));renderA4()}
+
+
+function applyTheme(){
+  try{
+    const t=JSON.parse(localStorage.getItem("parking_manager_theme_v1"))||{};
+    const root=document.documentElement;
+    if(t.primary)root.style.setProperty("--primary",t.primary);
+    if(t.secondary)root.style.setProperty("--blue",t.secondary);
+    if(t.bg)root.style.setProperty("--bg",t.bg);
+    if(t.card)root.style.setProperty("--card",t.card);
+  }catch(e){}
+}
+function saveTheme(){
+  const t={
+    primary:$("themePrimary")?.value||"#0f172a",
+    secondary:$("themeSecondary")?.value||"#2563eb",
+    bg:$("themeBg")?.value||"#f8fafc",
+    card:$("themeCard")?.value||"#ffffff"
+  };
+  localStorage.setItem("parking_manager_theme_v1",JSON.stringify(t));
+  applyTheme(); alert("Dashboard theme saved."); closeModal();
+}
+
+function settings(){
+  try{return JSON.parse(localStorage.getItem(SETTINGS))||{name:"Parking Manager",tagline:"Vehicle Location",logo:"",profile:"",userName:"System Admin",email:"admin@parking.com"}}catch(e){return{}}
+}
+function saveSettings(x){localStorage.setItem(SETTINGS,JSON.stringify(x))}
+
+function getAdminAuth(){
+  try{
+    const saved=JSON.parse(localStorage.getItem(ADMIN_AUTH));
+    if(saved && saved.userName && saved.password) return saved;
+  }catch(e){}
+  return {userName:"admin",password:"admin123"};
+}
+function saveAdminAuth(userName,password){
+  localStorage.setItem(ADMIN_AUTH,JSON.stringify({userName:userName,password:password}));
+}
+
+function getUsers(){try{return JSON.parse(localStorage.getItem(USERS))||[]}catch(e){return[]}}
+function saveUsers(u){localStorage.setItem(USERS,JSON.stringify(u))}
+
+function getMessages(){try{return JSON.parse(localStorage.getItem(MESSAGES))||[]}catch(e){return[]}}
+function saveMessages(m){localStorage.setItem(MESSAGES,JSON.stringify(m))}
+
+function getSession(){try{return JSON.parse(localStorage.getItem(SESSION))||null}catch(e){return null}}
+
+function norm(x){return String(x||"").trim().toUpperCase()}
+function esc(x){return String(x).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]))}
+function msg(id,text,type){$(id).textContent=text;$(id).className="msg "+type}
+
+function apply(){
+  const s=settings();
+  $("parkingName").textContent=s.name; $("parkingTagline").textContent=s.tagline;
+  $("a4Name").textContent=s.name; $("a4Tag").textContent=s.tagline;
+  
+  if(s.logo){$("logoImg").src=s.logo;$("logoImg").style.display="block";$("logoBox").querySelector("span").style.display="none"}
+  else{$("logoImg").style.display="none";$("logoBox").querySelector("span").style.display="block"}
+
+  const sess=getSession();
+  const recs=records();
+  $("dashTotal").textContent=recs.length;
+  $("dashZones").textContent=getZones().length;
+  $("dashOccupied").textContent=recs.filter(v=>v && v.number).length;
+  $("dashFree").textContent=Math.max(0,9-recs.filter(v=>v && v.number).length);
+  $("dashUpdated").textContent=recs.length?new Date().toLocaleTimeString([], {hour:"2-digit",minute:"2-digit"}):"—";
+  const msgs=getMessages();
+  $("msgCount").textContent=msgs.length;
+
+  const dashCard=$("desktopDashboardCard");
+  if(dashCard) dashCard.style.display="none";
+
+  if(sess){
+    $("profileName").textContent=sess.userName;
+    $("profileEmail").textContent=sess.email;
+    if(sess.pic){
+      $("headerAvatar").src=sess.pic; $("headerAvatar").style.display="block"; $("userIcon").style.display="none";
+      $("avatarImg").src=sess.pic; $("avatarImg").style.display="block"; $("avatarIcon").style.display="none";
+    } else {
+      $("headerAvatar").style.display="none"; $("userIcon").style.display="inline";
+      $("avatarImg").style.display="none"; $("avatarIcon").style.display="inline";
+    }
+    $("loginMenuBtn").classList.add("hidden");
+    $("logoutItem").classList.remove("hidden");
+    
+    if(sess.role==="admin"){
+      $("settingsMenuBtn").classList.remove("hidden");
+      $("cloudMenuBtn").classList.remove("hidden");
+      $("usersMenuBtn").classList.remove("hidden");
+      $("zonesMenuBtn").classList.remove("hidden"); $("rolesMenuBtn")?.classList.remove("hidden");
+      $("helpAdminBtn").classList.remove("hidden");
+      $("addVehicleCard").style.display="block";
+      if(dashCard) dashCard.style.display="block";
+    } else {
+      $("settingsMenuBtn").classList.add("hidden");
+      $("cloudMenuBtn").classList.add("hidden");
+      $("usersMenuBtn").classList.add("hidden");
+      $("zonesMenuBtn").classList.add("hidden"); $("rolesMenuBtn")?.classList.add("hidden");
+      $("helpAdminBtn").classList.add("hidden");
+      const perms=sess.permissions||{};
+      $("addVehicleCard").style.display=perms.canAdd===false||sess.canAdd===false?"none":"block";
+      if(dashCard) dashCard.style.display=perms.canDashboard===false?"none":"block";
+       const ex=$("excelBtn"); if(ex) ex.style.display=perms.canExcel===false?"none":"";
+       const sr=$("searchNumber"); if(sr) sr.disabled=perms.canSearch===false;
+    }
+  } else {
+    $("profileName").textContent="Guest User";
+    $("profileEmail").textContent="Not logged in";
+    $("headerAvatar").style.display="none"; $("userIcon").style.display="inline";
+    $("avatarImg").style.display="none"; $("avatarIcon").style.display="inline";
+    $("loginMenuBtn").classList.remove("hidden");
+    $("logoutItem").classList.add("hidden");
+    $("settingsMenuBtn").classList.add("hidden");
+    $("cloudMenuBtn").classList.add("hidden");
+    $("usersMenuBtn").classList.add("hidden");
+    $("zonesMenuBtn").classList.add("hidden"); $("rolesMenuBtn")?.classList.add("hidden");
+    $("helpAdminBtn").classList.add("hidden");
+    $("addVehicleCard").style.display="none";
+  }
+  renderA4();
+}
+
+// Automatically detect slot from vehicle number string (e.g. if starts with a digit 1-9 like "3-DHK" or "5 ABC")
+function detectSlotNumber(vehicleNum, placeText){
+  let cleanNum = vehicleNum.trim();
+  // Check if first character is a digit 1-9
+  let firstChar = parseInt(cleanNum.charAt(0));
+  if(!isNaN(firstChar) && firstChar >= 1 && firstChar <= 9){
+    return firstChar;
+  }
+  
+  // Check place text for slot number
+  let match = placeText.match(/(\d+)/);
+  if(match){
+    let num = parseInt(match[1]);
+    if(num >= 1 && num <= 9) return num;
+  }
+
+  // Default automatic assignment to next available slot between 1 and 9, or cycle
+  let existing = records();
+  for(let i=1; i<=9; i++){
+    if(!existing.some(v=>v.formNo===i)) return i;
+  }
+  return 1;
+}
+
+function saveVehicle(){
+  const sess=getSession();
+  if(!sess){alert("Please login first.");showLogin();return;}
+  if(!hasPermission("canAdd")){
+    msg("saveMsg","You do not have permission to add vehicles.","err");
+    return;
+  }
+  
+  const n=norm($("vehicleNumber").value), z=$("vehicleZone").value.trim(), p=$("vehiclePlace").value.trim();
+  if(!n||!z||!p){msg("saveMsg","Zone, Vehicle Number and Place are required.","err");return;}
+
+  // Automatically determine slot number based on input rules (e.g. 3 -> slot 3, 9 -> slot 9)
+  const slotNumber = detectSlotNumber(n, p);
+
+  let a=records();
+  let existingIndex=a.findIndex(v=>v.formNo===slotNumber);
+  if(existingIndex>=0){
+    a[existingIndex]={number:n, zone:z, place:p, formNo:slotNumber};
+    msg("saveMsg","Vehicle automatically assigned and updated at Slot "+slotNumber+".","ok");
+  } else {
+    a.push({number:n, zone:z, place:p, formNo:slotNumber});
+    msg("saveMsg","Vehicle saved: "+z+" / Slot "+slotNumber+".","ok");
+  }
+  
+  saveRecords(a);
+  syncRecordsToSupabase();
+  $("vehicleNumber").value=""; $("vehicleZone").value=""; $("vehiclePlace").value="";
+  renderZoneSelect();
+  setTimeout(()=>{ const m=$("saveMsg"); if(m) m.className="msg"; }, 1400);
+}
+
+function searchVehicle(){
+  const sess=getSession();
+  // Search is intentionally available before login; other operational features remain login-only.
+  if(sess && !hasPermission("canSearch")){alert("You do not have permission to search.");return;}
+  const q=norm($("searchNumber").value);
+  if(!q){$("searchResult").className="card result";return}
+  const v=records().find(x=>norm(x.number)===q);
+  $("searchNumber").value=""; 
+  $("searchResult").className="card result show";
+  $("searchResult").innerHTML=v?
+    `<div class="title">Vehicle Found</div><div class="vehicle"><div class="vtop"><div class="num">${esc(v.number)}</div><div class="formno">Slot No. ${v.formNo}</div></div><div class="place">📍 Zone: <b>${esc(v.zone||"")}</b> • Place: <b>${esc(v.place)}</b></div><button class="btn light" style="margin-top:10px;width:100%" onclick="clearSearchResult()">Clear Result</button></div>`:
+    `<div class="title">Search Result</div><div class="empty">No vehicle found for <b>${esc(q)}</b>.<br><button class="btn light" style="margin-top:10px" onclick="clearSearchResult()">Clear Result</button></div>`;
+}
+function clearSearchResult(){$("searchResult").className="card result";$("searchResult").innerHTML=""}
+$("searchNumber").addEventListener("keydown",e=>{if(e.key==="Enter")searchVehicle()});
+
+function openMenu(){$("menu").style.display="block"}
+function closeMenu(){$("menu").style.display="none"}
+function openModal(t,c){$("modalTitle").textContent=t;$("modalContent").innerHTML=c;$("modal").classList.add("show");closeModalMobileOnly();closeMenu()}
+function closeModal(){$("modal").classList.remove("show")}
+function closeModalMobileOnly(){}
+
+function showVehicleList(){
+  const a=records().sort((x,y)=>x.formNo-y.formNo);
+  const sess=getSession();
+  const isAdmin=sess && sess.role==="admin";
+  
+  openModal("Vehicle List (Grid View)", a.length?
+    '<div class="list">'+a.map(v=>`<div class="list-item"><div><b>Slot ${v.formNo}: ${esc(v.number)}</b><div style="font-size:12px;color:#64748b">${v.zone?`Zone: ${esc(v.zone)} • `:""}Place: ${esc(v.place)}</div></div><div style="display:flex;align-items:center;gap:8px"><span class="formno">Slot ${v.formNo}</span>${isAdmin?`<button class="btn red" style="height:32px;padding:0 8px;font-size:11px" onclick="deleteVehicle(${v.formNo})">Delete</button>`:""}</div></div>`).join("")+"</div>":
+    '<div class="empty">No saved vehicles yet.</div>'
+  );
+}
+
+function deleteVehicle(formNo){
+  if(!confirm("Are you sure you want to delete this vehicle slot?")) return;
+  let a=records().filter(v=>v.formNo!==formNo);
+  saveRecords(a);
+  showVehicleList();
+}
+
+function triggerProfilePicChange(){
+  const sess=getSession();
+  if(!sess){alert("Please login first.");showLogin();return;}
+  $("profilePicInput").click();
+}
+
+async function updateProfilePic(input){
+  if(input.files[0]){
+    let pic = await image(input.files[0]);
+    if(pic){
+      let sess=getSession();
+      sess.pic=pic;
+      localStorage.setItem(SESSION, JSON.stringify(sess));
+      
+      // Update in users database as well
+      let users=getUsers();
+      let u=users.find(x=>x.email===sess.email);
+      if(u){u.pic=pic;saveUsers(users);}
+      
+      apply();
+      alert("Profile picture updated successfully!");
+    }
+  }
+}
+
+function showProfile(){
+  const s=getSession(); if(!s){showLogin();return;}
+  openModal("My Profile & Account",`
+    <div class="profile-card" style="margin-bottom:12px">${s.pic?`<img class="user-photo" src="${s.pic}" alt="Profile">`:`<div class="user-photo">👤</div>`}<div><strong>${esc(s.userName||"User")}</strong><small>${esc(s.email||"")}</small><small style="color:var(--blue)">${esc(s.role||"user")}</small></div></div>
+    <div class="profile-edit-grid">
+      <div class="field"><label>Name</label><input id="myName" value="${esc(s.userName||"")}"></div>
+      <div class="field"><label>Phone</label><input id="myPhone" value="${esc(s.phone||"")}"></div>
+    </div>
+    <div class="field"><label>Change Profile Photo</label><input id="myPic" class="file" type="file" accept="image/*"></div>
+    <button class="btn primary full" onclick="saveMyProfile()">Save Profile</button>
+    <button class="btn light full" style="margin-top:8px" onclick="sendPasswordResetForUser(${JSON.stringify(s.email||"")})">🔑 Reset Password</button>
+    <div id="pm" class="msg"></div>
+  `);
+}
+async function saveMyProfile(){
+  const s=getSession(); if(!s)return;
+  const name=$("myName").value.trim(),phone=$("myPhone").value.trim(); if(!name){msg("pm","Name is required.","err");return;}
+  s.userName=name;s.phone=phone; if($("myPic")?.files[0])s.pic=await image($("myPic").files[0]);
+  localStorage.setItem(SESSION,JSON.stringify(s));
+  if(s.role!=="admin"){let users=getUsers(),u=users.find(x=>String(x.id)===String(s.id)||x.email===s.email);if(u){u.userName=name;u.phone=phone;if(s.pic)u.pic=s.pic;saveUsers(users);syncUsersToSupabase();}}
+  apply(); msg("pm","Profile updated successfully.","ok");
+  setTimeout(()=>closeModal(),900);
+}
+
+
+function showPendingApprovalMessage(){
+  openModal("Waiting for Admin Approval",`
+    <div class="notice" style="font-size:14px;line-height:1.6">
+      <b>Your registration is Pending.</b><br>
+      Waiting for admin approval. You can log in after the administrator approves your account.
+    </div>
+    <button class="btn primary full" onclick="closeModal()">OK</button>
+  `);
+}
+
+function showLogin(){
+  openModal("Login",`
+    <div class="field"><label>Email or Phone</label><input id="liEmail" type="text" placeholder="Enter email/phone"></div>
+    <div class="field"><label>Password</label><input id="liPass" type="password" placeholder="Enter password"></div>
+    <button class="btn primary full" onclick="handleLogin()">Login</button>
+    <button class="btn light full" style="margin-top:8px" onclick="closeModal()">Close</button>
+    <div style="margin-top:12px;text-align:center"><button style="border:0;background:none;color:#2563eb;font-weight:800;cursor:pointer" onclick="showRegisterModal()">New User? Register Here</button></div>
+    <div id="lm" class="msg"></div>
+  `);
+}
+
+function showRegisterModal(){
+  openModal("New User Registration",`
+    <div class="field"><label>Full Name</label><input id="rgName" type="text" placeholder="Your Name"></div>
+    <div class="field"><label>Email ID</label><input id="rgEmail" type="email" placeholder="name@example.com"></div>
+    <div class="field"><label>Phone Number</label><input id="rgPhone" type="text" placeholder="Phone number"></div>
+    <div class="field"><label>Profile Picture</label><input id="rgPic" class="file" type="file" accept="image/*"></div>
+    <div class="field"><label>Password (never shown in the user list)</label><input id="rgPass" type="password" placeholder="Create password"></div>
+    <div class="field"><label>Confirm Password</label><input id="rgPass2" type="password" placeholder="Confirm password"></div>
+    <div class="notice">Passwords are protected with one-way hashing for this offline version. For production/cloud use, connect Supabase Auth; the admin user list will never display raw passwords.</div>
+    <button class="btn primary full" onclick="handleRegister()">Submit Registration</button>
+    <button class="btn light full" style="margin-top:8px" onclick="closeModal()">Close</button>
+    <button class="btn light full" style="margin-top:8px" onclick="showLogin()">Already registered? Login</button>
+    <div id="rm" class="msg"></div>
+  `);
+}
+
+async function handleRegister(){
+  const name=$("rgName").value.trim(), email=$("rgEmail").value.trim().toLowerCase(), phone=$("rgPhone").value.trim();
+  const pass=$("rgPass").value, pass2=$("rgPass2").value;
+  if(!name||!email||!pass){msg("rm","Name, Email and Password are required.","err");return;}
+  if(pass!==pass2){msg("rm","Passwords do not match.","err");return;}
+  let pic=""; if($("rgPic").files[0])pic=await image($("rgPic").files[0]);
+  let users=getUsers();
+  if(users.some(u=>u.email===email)){msg("rm","Email already registered.","err");return;}
+  const cfg=getSupabaseConfig();
+  if(cfg.enabled && await initSupabase()){
+    const {data,error}=await supabaseClient.auth.signUp({email,password:pass,options:{data:{user_name:name,phone,pic,role:"user"}}});
+    if(error){msg("rm","Online registration failed: "+error.message,"err");return;}
+    const authId=data.user?.id||"";
+    users.push({id:authId||Date.now(),authUserId:authId,userName:name,email,phone,pic,passHash:"",status:"pending",role:"user",canAdd:true,permissions:{canAdd:true,canDashboard:true,canExcel:false,canSearch:true,canEdit:false,canDelete:false}});
+    saveUsers(users);
+    await syncUsersToSupabase();
+    msg("rm",data.session?"Registration submitted. Admin approval is required before access.":"Registration submitted. Check your email if confirmation is enabled, then wait for Admin approval.","ok");
+    setTimeout(()=>{closeModal();closeMenu();},1400);
+    return;
+  }
+  users.push({id:Date.now(),userName:name,email,phone,pic,passHash:await hashPassword(pass),status:"pending",role:"user",canAdd:true,permissions:{canAdd:true,canDashboard:true,canExcel:false,canSearch:true,canEdit:false,canDelete:false}});
+  saveUsers(users); msg("rm","Registration submitted. Waiting for Admin approval.","ok");
+  setTimeout(()=>{closeModal();closeMenu();},1400);
+}
+
+async function handleLogin(){
+  const credential=$("liEmail").value.trim().toLowerCase(), pass=$("liPass").value;
+  if(!credential||!pass){msg("lm","Enter login credentials.","err");return;}
+  const adminAuth=getAdminAuth();
+  const isDefaultAdmin=(credential==="admin" && pass==="admin123");
+  const isSavedAdmin=(credential===String(adminAuth.userName).trim().toLowerCase() && pass===String(adminAuth.password));
+  if(isDefaultAdmin || isSavedAdmin){
+    const s=settings(); const adminSess={userName:s.userName||"System Admin",email:s.email||"admin@parking.com",role:"admin",canAdd:true,pic:s.profile||"",permissions:{canAdd:true,canDashboard:true,canExcel:true,canSearch:true,canEdit:true,canDelete:true}};
+    localStorage.setItem(SESSION,JSON.stringify(adminSess)); apply(); closeModal(); closeMenu(); alert("Admin Login Successful!"); return;
+  }
+  const cfg=getSupabaseConfig();
+  if(cfg.enabled && await initSupabase()){
+    const {data,error}=await supabaseClient.auth.signInWithPassword({email:credential,password:pass});
+    if(!error && data.user){
+      let users=getUsers(); let u=users.find(x=>x.authUserId===data.user.id||x.email===credential);
+      if(!u){u={id:data.user.id,authUserId:data.user.id,userName:data.user.user_metadata?.user_name||credential.split("@")[0],email:data.user.email,phone:data.user.user_metadata?.phone||"",pic:data.user.user_metadata?.pic||"",status:"pending",role:"user",permissions:{canAdd:true,canDashboard:true,canExcel:false,canSearch:true,canEdit:false,canDelete:false}};users.push(u);saveUsers(users);}
+      if(u.status!=="approved"){await supabaseClient.auth.signOut();msg("lm","Login found, but Admin approval is still pending.","err");return;}
+      localStorage.setItem(SESSION,JSON.stringify({...u,authUserId:data.user.id})); apply(); closeModal(); closeMenu(); alert("Login successful."); return;
+    }
+  }
+  let users=getUsers(), passHash=await hashPassword(pass);
+  let user=users.find(u=>(u.email===credential||u.phone===credential)&&(u.passHash===passHash||u.pass===pass));
+  if(!user){msg("lm","Invalid credentials or user not found.","err");return;}
+  if(user.status!=="approved"){msg("lm","Your account is pending admin approval. Please wait.","err");return;}
+  localStorage.setItem(SESSION,JSON.stringify(user)); apply(); closeModal(); closeMenu(); alert("Login successful.");
+}
+
+async function logout(){
+  try{if(supabaseClient) await supabaseClient.auth.signOut();}catch(e){}
+  localStorage.removeItem(SESSION);
+  apply(); closeMenu(); alert("Logged out successfully.");
+}
+
+function userPhotoHtml(u){
+  return u.pic ? `<img class="user-photo" src="${u.pic}" alt="User photo">` : `<div class="user-photo">👤</div>`;
+}
+
+function hasPermission(key){
+  const s=getSession();
+  if(!s) return false;
+  if(s.role==="admin") return true;
+  return !(s.permissions && s.permissions[key]===false);
+}
+
+function userPermission(u,key){
+  return u.permissions ? u.permissions[key] !== false : (key==="canAdd" ? u.canAdd!==false : true);
+}
+function showUsersAdmin(){
+  let users=getUsers();
+  openModal("User Management & Approval",`
+    <div class="stat-grid">
+      <div class="stat"><b>${users.length}</b><small>Total Users</small></div>
+      <div class="stat"><b>${users.filter(u=>u.status==="approved").length}</b><small>Approved</small></div>
+      <div class="stat"><b>${users.filter(u=>u.status==="pending").length}</b><small>Pending Approval</small></div>
+    </div>
+    <div class="notice"><b>Password security:</b> Admin can edit the account and trigger a password reset, but raw passwords are never displayed or stored in the user list.</div>
+    <div class="field search-users"><label>Search all users</label><input id="userSearch" type="text" placeholder="Search name, email or phone..." oninput="filterUsersAdmin()"></div>
+    <button class="btn blue full" onclick="showAddUserAdmin()">➕ Register / Add User</button>
+    <div id="userAdminList" class="user-list-wrap" style="margin-top:10px">${renderUserAdminList(users)}</div>
+  `);
+}
+function renderUserAdminList(users){
+  if(!users.length) return '<div class="empty">No users found.</div>';
+  return `<div class="user-list-head"><div>User</div><div>Contact</div><div>Status</div><div>Permissions</div><div>Actions</div></div>` + users.map(u=>`
+    <div class="user-list-row">
+      <div class="user-list-user">${userPhotoHtml(u)}<div><b>${esc(u.userName||"Unnamed")}</b><small>${esc(u.email||"No email")}</small></div></div>
+      <div><div>📱 ${esc(u.phone||"N/A")}</div><small style="color:var(--muted)">ID: ${esc(u.id)}</small></div>
+      <div><span class="badge ${u.status==="approved"?"approved":"pending"}">${esc((u.status||"pending").toUpperCase())}</span></div>
+      <div class="permission-line">
+        <span class="permission-chip">Add: ${userPermission(u,"canAdd")?"ON":"OFF"}</span>
+        <span class="permission-chip">Dash: ${userPermission(u,"canDashboard")?"ON":"OFF"}</span>
+        <span class="permission-chip">Excel: ${userPermission(u,"canExcel")?"ON":"OFF"}</span>
+        <span class="permission-chip">Search: ${userPermission(u,"canSearch")?"ON":"OFF"}</span>
+      </div>
+      <div class="list-actions">
+        ${u.status==="pending"?`<button class="btn blue" onclick="approveUser(${JSON.stringify(u.id)})">Approve</button>`:""}
+        <button class="btn light" onclick="editUserAdmin(${JSON.stringify(u.id)})">Edit</button>
+        <button class="btn red" onclick="deleteUser(${JSON.stringify(u.id)})">Delete</button>
+      </div>
+    </div>`).join("");
+}
+function filterUsersAdmin(){
+  const q=norm($("userSearch").value);
+  const users=getUsers().filter(u=>!q || norm(u.userName).includes(q)||norm(u.email).includes(q)||norm(u.phone).includes(q));
+  $("userAdminList").innerHTML=renderUserAdminList(users);
+}
+function showAddUserAdmin(existingId){
+  const u=existingId ? getUsers().find(x=>String(x.id)===String(existingId)) : null;
+  const perms=u?.permissions||{canAdd:true,canDashboard:true,canExcel:false,canSearch:true};
+  openModal(u?"Edit User Profile":"Admin User Registration",`
+    <div class="settings-section"><h4>Account Information</h4>
+      <div class="profile-edit-grid">
+        <div class="field"><label>Full Name</label><input id="auName" type="text" value="${esc(u?.userName||"")}"></div>
+        <div class="field"><label>Email Address</label><input id="auEmail" type="email" value="${esc(u?.email||"")}"></div>
+        <div class="field"><label>Phone Number</label><input id="auPhone" type="text" value="${esc(u?.phone||"")}"></div>
+        ${!u?`<div class="field"><label>Initial Password</label><input id="auPass" type="password" autocomplete="new-password" placeholder="Set initial password"></div>`:""}
+      </div>
+      <div class="field"><label>User Photo</label><input id="auPic" class="file" type="file" accept="image/*"></div>
+    </div>
+    <div class="settings-section"><h4>Permissions</h4><div class="perms">
+      <label class="perm"><input id="pAdd" type="checkbox" ${perms.canAdd!==false?"checked":""}> Add Vehicle</label>
+      <label class="perm"><input id="pDash" type="checkbox" ${perms.canDashboard!==false?"checked":""}> View Dashboard</label>
+      <label class="perm"><input id="pExcel" type="checkbox" ${perms.canExcel===true?"checked":""}> Use Excel</label>
+      <label class="perm"><input id="pSearch" type="checkbox" ${perms.canSearch!==false?"checked":""}> Search</label>
+      <label class="perm"><input id="pEdit" type="checkbox" ${u?.permissions?.canEdit!==false?"checked":""}> Edit Users</label>
+      <label class="perm"><input id="pDelete" type="checkbox" ${u?.permissions?.canDelete===true?"checked":""}> Delete Users</label>
+    </div></div>
+    <div class="notice">For online Supabase accounts, use <b>Forgot Password / Reset Password</b> rather than trying to view a user's password. The system must never reveal raw passwords.</div>
+    <button class="btn primary full" onclick="saveAdminUser(${JSON.stringify(existingId||0)})">${u?"Save Profile Changes":"Create User Account"}</button>
+    ${u?`<button class="btn light full" style="margin-top:8px" onclick="sendPasswordResetForUser(${JSON.stringify(u.email||"")})">🔑 Send Password Reset</button>`:""}
+    <div id="aum" class="msg"></div>
+  `);
+}
+function editUserAdmin(id){
+  const s=getSession(); if(!s || s.role!=="admin"){alert("Admin access required.");return;}
+  showAddUserAdmin(id);
+}
+async function saveAdminUser(id){
+  const name=$("auName").value.trim(), email=$("auEmail").value.trim().toLowerCase(), phone=$("auPhone").value.trim();
+  if(!name||!email){msg("aum","Name and email are required.","err");return;}
+  let users=getUsers();
+  let pic=""; if($("auPic")?.files[0]) pic=await image($("auPic").files[0]);
+  const permissions={canAdd:$("pAdd").checked,canDashboard:$("pDash").checked,canExcel:$("pExcel").checked,canSearch:$("pSearch").checked,canEdit:$("pEdit").checked,canDelete:$("pDelete").checked};
+  if(id){
+    const u=users.find(x=>String(x.id)===String(id)); if(!u)return;
+    u.userName=name;u.email=email;u.phone=phone;u.permissions=permissions;u.canAdd=permissions.canAdd;if(pic)u.pic=pic;
+  }else{
+    const pass=$("auPass").value; if(!pass){msg("aum","Initial password is required for an offline account.","err");return;}
+    if(users.some(u=>u.email===email)){msg("aum","Email already exists.","err");return;}
+    users.push({id:Date.now(),userName:name,email,phone,pic,passHash:await hashPassword(pass),status:"approved",role:"user",canAdd:permissions.canAdd,permissions});
+  }
+  saveUsers(users); showUsersAdmin(); apply(); syncUsersToSupabase();
+  setTimeout(()=>closeModal(),900);
+}
+function sendPasswordResetForUser(email){
+  if(!email)return;
+  if(typeof supabaseClient!=="undefined" && supabaseClient){
+    supabaseClient.auth.resetPasswordForEmail(email,{redirectTo:location.href}).then(({error})=>alert(error?"Password reset failed: "+error.message:"Password reset email sent to "+email));
+  } else alert("Supabase is not connected. Ask the user to use the local account password or connect Supabase first.");
+}
+
+function approveUser(id){
+  let users=getUsers(),u=users.find(x=>x.id===id);
+  if(u){u.status="approved";saveUsers(users);showUsersAdmin();apply();syncUsersToSupabase();}
+}
+function toggleUserPerm(id, field, val){
+  let users=getUsers(),u=users.find(x=>x.id===id);
+  if(u){
+    u.permissions=u.permissions||{canAdd:true,canDashboard:true,canExcel:true,canSearch:true};
+    u.permissions[field]=val;
+    if(field==="canAdd")u.canAdd=val;
+    saveUsers(users);showUsersAdmin();apply();syncUsersToSupabase();
+  }
+}
+function deleteUser(id){
+  const s=getSession(); if(!s || s.role!=="admin"){alert("Admin access required.");return;}
+  if(!confirm("Delete this user?")) return;
+  saveUsers(getUsers().filter(x=>String(x.id)!==String(id)));showUsersAdmin();apply();syncUsersToSupabase();
+}
+async function hashPassword(pass){
+  const data=new TextEncoder().encode(pass);
+  const hash=await crypto.subtle.digest("SHA-256",data);
+  return Array.from(new Uint8Array(hash)).map(b=>b.toString(16).padStart(2,"0")).join("");
+}
+
+
+function showHelpUser(){
+  const sess=getSession();
+  openModal("Help Center",`
+    <div class="field"><label>Your Message / Issue to Admin</label><textarea id="helpText" rows="4" style="width:100%;border:1px solid #d5dce6;border-radius:11px;padding:10px;font-size:14px;outline:0;font-family:inherit" placeholder="Type your message here..."></textarea></div>
+    <button class="btn primary full" onclick="sendHelpMessage()">Send to Admin</button>
+    <div id="hm" class="msg"></div>
+  `);
+}
+
+function sendHelpMessage(){
+  const sess=getSession();
+  const txt=$("helpText").value.trim();
+  if(!txt){msg("hm","Please write a message.","err");return;}
+  let msgs=getMessages();
+  msgs.push({
+    id:Date.now(),
+    userName:sess?sess.userName:"Guest",
+    email:sess?sess.email:"No email",
+    message:txt,
+    date:new Date().toLocaleString()
+  });
+  saveMessages(msgs);
+  msg("hm","Message sent successfully to Admin.","ok");
+  $("helpText").value="";
+  apply();
+}
+
+function showHelpAdmin(){
+  let msgs=getMessages();
+  openModal("Help Inbox ("+msgs.length+")", msgs.length?
+    '<div class="list">'+msgs.map(m=>`
+      <div class="list-item" style="flex-direction:column;align-items:flex-start;">
+        <div style="display:flex;justify-content:space-between;width:100%;font-size:12px;color:#64748b">
+          <b>${esc(m.userName)} (${esc(m.email)})</b><span>${m.date}</span>
+        </div>
+        <div style="margin-top:6px;font-size:14px;color:#172033">${esc(m.message)}</div>
+        <button class="btn red" style="height:28px;padding:0 8px;font-size:11px;margin-top:8px;margin-left:auto" onclick="deleteMsg(${m.id})">Delete</button>
+      </div>
+    `).join("")+"</div>":
+    '<div class="empty">No messages in help inbox.</div>'
+  );
+}
+
+function deleteMsg(id){
+  let msgs=getMessages().filter(m=>m.id!==id);
+  saveMessages(msgs);
+  showHelpAdmin();
+  apply();
+}
+
+
+let supabaseClient=null;
+function getSupabaseConfig(){
+  try{return JSON.parse(localStorage.getItem("parking_manager_supabase_v1"))||{url:"",key:"",enabled:false}}catch(e){return {url:"",key:"",enabled:false}}
+}
+function saveSupabaseConfig(c){localStorage.setItem("parking_manager_supabase_v1",JSON.stringify(c))}
+async function initSupabase(){
+  const c=getSupabaseConfig();
+  if(!c.url||!c.key||typeof window.supabase==="undefined"){supabaseClient=null;return false}
+  try{supabaseClient=window.supabase.createClient(c.url,c.key);return true}catch(e){supabaseClient=null;return false}
+}
+
+async function syncRecordsToSupabase(){
+  if(!await initSupabase())return false;
+  const sess=getSession();
+  const rows=records().map(v=>({
+    id:String(v.id||(`${v.formNo}-${v.number}`)),
+    form_no:Number(v.formNo)||0,
+    vehicle_number:v.number||"",
+    zone:v.zone||"",
+    place:v.place||"",
+    created_by_email:sess?.email||""
+  }));
+  try{
+    if(rows.length) await supabaseClient.from("parking_vehicles").upsert(rows,{onConflict:"id"});
+    return true;
+  }catch(e){console.warn("Supabase vehicle sync:",e.message);return false}
+}
+async function pullRecordsFromSupabase(){
+  if(!await initSupabase())return false;
+  try{
+    const {data,error}=await supabaseClient.from("parking_vehicles").select("*").order("form_no");
+    if(error)throw error;
+    if(Array.isArray(data)){
+      const local=data.map(v=>({id:v.id,formNo:Number(v.form_no)||0,number:v.vehicle_number||"",zone:v.zone||"",place:v.place||""}));
+      localStorage.setItem(KEY,JSON.stringify(local)); renderA4(); apply();
+    }
+    return true;
+  }catch(e){console.warn("Supabase vehicle load:",e.message);return false}
+}
+
+async function syncUsersToSupabase(){
+  if(!await initSupabase())return;
+  const users=getUsers();
+  // Passwords are intentionally NOT sent to this table. Supabase Auth owns passwords.
+  const rows=users.map(u=>({id:String(u.id),auth_user_id:u.authUserId||null,user_name:u.userName,email:u.email,phone:u.phone||"",photo:u.pic||"",status:u.status||"pending",role:u.role||"user",can_add:!!(u.permissions?.canAdd!==false && u.canAdd!==false),can_dashboard:u.permissions?.canDashboard!==false,can_excel:u.permissions?.canExcel!==false,can_search:u.permissions?.canSearch!==false}));
+  try{await supabaseClient.from("parking_users").upsert(rows,{onConflict:"id"});}catch(e){console.warn("Supabase user sync:",e.message)}
+}
+async function pullUsersFromSupabase(){
+  if(!await initSupabase())return false;
+  try{
+    const {data,error}=await supabaseClient.from("parking_users").select("*").order("user_name");
+    if(error)throw error;
+    if(Array.isArray(data)){
+      const users=data.map(u=>({id:Number(u.id)||u.id,userName:u.user_name,email:u.email,phone:u.phone||"",pic:u.photo||"",status:u.status||"pending",role:u.role||"user",canAdd:u.can_add!==false,permissions:{canAdd:u.can_add!==false,canDashboard:u.can_dashboard!==false,canExcel:u.can_excel!==false,canSearch:u.can_search!==false,canEdit:u.can_edit===true,canDelete:u.can_delete===true}}));
+      saveUsers(users);apply();
+    }
+    return true;
+  }catch(e){console.warn("Supabase user load:",e.message);return false}
+}
+function showSupabaseSettings(){
+  const c=getSupabaseConfig();
+  openModal("Supabase / Cloud Sync",`
+    <div class="notice"><b>Security:</b> Never put a Supabase service-role key here. Use only your project's public <b>anon</b> key. User passwords are not stored in the users table.</div>
+    <div class="field"><label>Supabase Project URL</label><input id="sbUrl" type="text" value="${esc(c.url)}" placeholder="https://xxxx.supabase.co"></div>
+    <div class="field"><label>Supabase anon public key</label><input id="sbKey" type="password" value="${esc(c.key)}" placeholder="eyJ..."></div>
+    <label class="perm"><input id="sbEnabled" type="checkbox" ${c.enabled?"checked":""}> Enable cloud sync</label>
+    <button class="btn primary full" style="margin-top:12px" onclick="saveSupabaseForm()">Save & Test Connection</button>
+    <button class="btn light full" style="margin-top:8px" onclick="pullUsersFromSupabase().then(()=>alert('Cloud user list loaded.'))">⬇️ Load Users from Supabase</button>
+    <button class="btn light full" style="margin-top:8px" onclick="pullRecordsFromSupabase().then(()=>alert('Shared vehicle list loaded.'))">🚗 Load Shared Vehicles</button>
+    <div id="sbm" class="msg"></div>
+  `);
+}
+async function saveSupabaseForm(){
+  const c={url:$("sbUrl").value.trim(),key:$("sbKey").value.trim(),enabled:$("sbEnabled").checked};
+  saveSupabaseConfig(c);
+  if(!c.enabled){msg("sbm","Cloud sync disabled. LocalStorage remains active.","ok");setTimeout(()=>closeModal(),900);return}
+  if(await initSupabase()){
+    msg("sbm","Supabase connected. Syncing users...","ok");
+    await syncUsersToSupabase();
+    setTimeout(()=>closeModal(),900);
+  }else msg("sbm","Connection could not be initialized. Check URL, anon key, and the Supabase library.","err");
+}
+
+function showCloudGuide(){
+  openModal("Supabase + Netlify Connection Guide",`
+    <div class="settings-section"><h4>1) Supabase Project URL + Publishable/Anon Key</h4>
+      <p style="font-size:12px;color:#475569">Admin → <b>Supabase & Netlify Setup</b>. Paste only your Supabase Project URL and public anon/publishable key. <b>Never paste the Secret / Service Role key into this HTML.</b></p>
+      <button class="btn light full" onclick="showSupabaseSettings()">Open Supabase Connection</button>
+    </div>
+    <div class="settings-section"><h4>2) Supabase SQL — parking_users table</h4>
+      <div class="setup-code">create table if not exists public.parking_users (
+  id text primary key,
+  auth_user_id uuid,
+  user_name text not null,
+  email text not null,
+  phone text,
+  photo text,
+  status text default 'pending',
+  role text default 'user',
+  can_add boolean default true,
+  can_dashboard boolean default true,
+  can_excel boolean default false,
+  can_search boolean default true,
+  can_edit boolean default false,
+  can_delete boolean default false,
+  created_at timestamptz default now()
+);</div>
+      <p style="font-size:11px;color:#64748b">For production, configure Row Level Security and policies carefully. This HTML does not use a service-role key.</p>
+    </div>
+    <div class="settings-section"><h4>3) Supabase SQL — shared vehicle data</h4>
+      <div class="setup-code">create table if not exists public.parking_vehicles (
+  id text primary key,
+  form_no integer not null,
+  vehicle_number text not null,
+  zone text,
+  place text,
+  created_by_email text,
+  created_at timestamptz default now()
+);
+-- For testing, enable access only according to your security policy.
+-- For production, use authenticated RLS policies; do not expose a service-role key in the browser.</div>
+      <p style="font-size:11px;color:#64748b">When cloud sync is enabled, users can load the shared vehicle list from Supabase. LocalStorage remains the offline cache.</p>
+    </div>
+    <div class="settings-section"><h4>4) Netlify + GitHub</h4>
+      <ol style="font-size:12px;color:#475569;padding-left:20px"><li>Keep this file as <b>index.html</b> in the <b>parking-manager</b> GitHub repository.</li><li>Netlify → Build & deploy → Link repository → GitHub → select <b>parking-manager</b>.</li><li>Branch: <b>main</b>. Base directory: <b>blank/root</b>. Publish directory: <b>blank/root</b> for a single index.html.</li><li>Click Link/Deploy. Future GitHub commits can trigger automatic Netlify deploys.</li></ol>
+    </div>
+    <div class="settings-section"><h4>5) Website link</h4><p style="font-size:12px;color:#475569">Netlify gives the public website address after deployment. Share that Netlify site address with users; they should not need Netlify dashboard access.</p></div>
+  `);
+}
+
+function showSettings(){
+  const s=settings();
+  openModal("Admin Settings & Design",`
+    <div class="field"><label>Parking Name</label><input id="sn" type="text" value="${esc(s.name)}"></div>
+    <div class="field"><label>Vehicle Location / Subtitle</label><input id="st" type="text" value="${esc(s.tagline)}"></div>
+    <div class="field"><label>Admin Name</label><input id="su" type="text" value="${esc(s.userName)}"></div>
+    <div class="field"><label>Admin Email</label><input id="se" type="email" value="${esc(s.email)}"></div>
+    <div class="field"><label>Login Username</label><input id="sau" type="text" value="${esc(getAdminAuth().userName)}" autocomplete="username"></div>
+    <div class="field"><label>New Login Password</label><input id="sap" type="password" placeholder="Leave blank to keep current password" autocomplete="new-password"></div>
+    <div class="field"><label>Confirm New Password</label><input id="sap2" type="password" placeholder="Confirm new password" autocomplete="new-password"></div>
+    <div style="font-size:11px;color:#64748b;margin:-4px 0 12px;">You can change the admin username and password here. Offline mode stores these settings on this device/browser. Cloud mode uses Supabase when configured.</div>
+    <div class="notice"><b>Admin login recovery:</b> Current local admin username is shown below. The current local password can be revealed only on this device after clicking Show Password.</div>
+    <div class="field"><label>Current Admin Username</label><input value="${esc(getAdminAuth().userName)}" readonly></div>
+    <div class="field"><label>Current Admin Password</label><div style="display:flex;gap:7px"><input id="currentAdminPass" type="password" value="${esc(getAdminAuth().password)}" readonly><button class="btn light" style="height:46px" onclick="toggleAdminPassword()">Show</button></div></div>
+    <div class="field"><label>Company Logo</label><input id="sl" class="file" type="file" accept="image/*"></div>
+    <button class="btn primary full" onclick="saveSettingForm()">Save Settings</button>
+    <div id="sm" class="msg"></div>
+  `);
+}
+
+function toggleAdminPassword(){
+  const el=$("currentAdminPass"); if(!el)return;
+  el.type=el.type==="password"?"text":"password";
+}
+function image(file){return new Promise(r=>{if(!file)return r("");let f=new FileReader();f.onload=()=>r(f.result);f.onerror=()=>r("");f.readAsDataURL(file)})}
+
+async function saveSettingForm(){
+  let s=settings();
+  const newAdminUser=$("sau").value.trim();
+  const newPass=$("sap").value;
+  const confirmPass=$("sap2").value;
+
+  if(!newAdminUser){
+    msg("sm","Login Username is required.","err");
+    return;
+  }
+  if(newPass && newPass!==confirmPass){
+    msg("sm","New passwords do not match.","err");
+    return;
+  }
+
+  s.name=$("sn").value.trim()||"Parking Manager";
+  s.tagline=$("st").value.trim()||"Vehicle Location";
+  s.userName=$("su").value.trim()||"System Admin";
+  s.email=$("se").value.trim();
+  let l=await image($("sl").files[0]);
+  if(l)s.logo=l;
+
+  const currentAuth=getAdminAuth();
+  saveAdminAuth(newAdminUser, newPass ? newPass : currentAuth.password);
+  saveSettings(s);
+
+  const sess=getSession();
+  if(sess && sess.role==="admin"){
+    sess.userName=s.userName;
+    sess.email=s.email;
+    localStorage.setItem(SESSION,JSON.stringify(sess));
+  }
+
+  apply(); msg("sm","Settings saved successfully. Your admin username/password are updated.","ok");
+  setTimeout(()=>closeModal(),900);
+}
+
+function exportToExcel(){
+  const sess=getSession();
+  if(sess && sess.role!=="admin" && sess.permissions && sess.permissions.canExcel===false){
+    alert("You do not have permission to use Excel export."); return;
+  }
+  const a=records().slice().sort((x,y)=>(x.formNo||0)-(y.formNo||0));
+  if(!a.length){alert("No vehicle records to export.");return;}
+  if(typeof XLSX==="undefined"){
+    let csv="Slot No,Vehicle Number,Zone,Vehicle Place\n";
+    a.forEach(v=>{csv+=`"${v.formNo}","${v.number}","${v.zone||""}","${v.place||""}"\n`;});
+    const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});
+    const url=URL.createObjectURL(blob); const tag=document.createElement('a');
+    tag.href=url; tag.download='parking_slots_backup.csv'; document.body.appendChild(tag);
+    tag.click(); tag.remove(); URL.revokeObjectURL(url); return;
+  }
+  const wb=XLSX.utils.book_new();
+  const zones=getZones();
+  const groups={};
+  a.forEach(v=>{const z=(v.zone||"Unassigned").trim()||"Unassigned";(groups[z] ||= []).push(v);});
+  const ordered=[...zones.filter(z=>groups[z]), ...Object.keys(groups).filter(z=>!zones.includes(z))];
+  if(!ordered.length) ordered.push("Unassigned");
+  ordered.forEach(zone=>{
+    const rows=(groups[zone]||[]).map(v=>({
+      "Serial":v.formNo,
+      "Vehicle Number":v.number,
+      "Zone":zone,
+      "Place":v.place||""
+    })).sort((x,y)=>Number(x.Serial)-Number(y.Serial));
+    const ws=XLSX.utils.json_to_sheet(rows);
+    ws["!cols"]=[{wch:10},{wch:20},{wch:18},{wch:28}];
+    XLSX.utils.book_append_sheet(wb,ws,safeSheetName(zone));
+  });
+  XLSX.writeFile(wb,"Parking_Manager_By_Zone.xlsx");
+}
+function safeSheetName(name){
+  let s=String(name||"Zone").replace(/[\\\/\?\*\[\]\:]/g," ").trim()||"Zone";
+  return s.slice(0,31);
+}
+
+const DEFAULT_USER_RULES=["Admin","Manager","Supervisor","Foreman","Advisor","Technician","Driver","Staff"];
+function getUserRules(){
+  try{
+    const r=JSON.parse(localStorage.getItem("parking_manager_user_rules_v1"));
+    if(Array.isArray(r)&&r.length) return r.map(x=>String(x).trim()).filter(Boolean);
+  }catch(e){}
+  return DEFAULT_USER_RULES.slice();
+}
+function saveUserRules(r){
+  localStorage.setItem("parking_manager_user_rules_v1",JSON.stringify([...new Set(r.map(x=>String(x).trim()).filter(Boolean))]));
+}
+function showUserRulesManager(){
+  if(!getSession() || getSession().role!=="admin"){alert("Admin only.");return;}
+  openModal("User Rules / Roles",`
+    <div class="notice">Admin can add or remove official user roles here.</div>
+    <div class="field"><label>New Role / Rule</label><input id="newUserRule" placeholder="e.g. Controller"></div>
+    <button class="btn primary full" onclick="addUserRule()">➕ Add Role</button>
+    <div class="zone-grid" style="margin-top:12px">${getUserRules().map(r=>
+      `<div class="zone-chip"><span>${esc(r)}</span><button onclick="deleteUserRule(${JSON.stringify(r)})">Delete</button></div>`
+    ).join("")}</div>
+  `);
+}
+function addUserRule(){
+  const el=$("newUserRule"), r=el.value.trim();
+  if(!r)return;
+  const rules=getUserRules();
+  if(rules.some(x=>norm(x)===norm(r))){alert("This role already exists.");return;}
+  rules.push(r); saveUserRules(rules); showUserRulesManager();
+}
+function deleteUserRule(r){
+  if(getUserRules().length<=1){alert("Keep at least one role.");return;}
+  if(!confirm("Delete role '"+r+"' from the role list? Existing users are not deleted."))return;
+  saveUserRules(getUserRules().filter(x=>x!==r)); showUserRulesManager();
+}
+
+function getZones(){
+  try{
+    const z=JSON.parse(localStorage.getItem("parking_manager_zones_v1"));
+    if(Array.isArray(z) && z.length) return z.map(x=>String(x).trim()).filter(Boolean);
+  }catch(e){}
+  return ["Zone A","Zone B","Zone C","Zone D","Zone E","Zone F","Zone G","Zone H","Zone I"];
+}
+function saveZones(zones){
+  const clean=[...new Set(zones.map(x=>String(x).trim()).filter(Boolean))];
+  localStorage.setItem("parking_manager_zones_v1",JSON.stringify(clean));
+  renderZoneSelect();
+  apply();
+}
+function renderZoneSelect(){
+  const el=$("vehicleZone"); if(!el)return;
+  const current=el.value;
+  const zones=getZones();
+  el.innerHTML='<option value="">Select Zone</option>'+zones.map(z=>`<option value="${esc(z)}">${esc(z)}</option>`).join("");
+  if(current && zones.includes(current)) el.value=current;
+}
+function showZoneManager(){
+  const zones=getZones();
+  openModal("Zone Management",`
+    <div class="notice"><b>Admin only:</b> Add, rename, or remove zones. Vehicle records keep their saved zone text.</div>
+    <div class="field"><label>New Zone Name</label><input id="newZoneName" type="text" placeholder="e.g. B1 Zone"></div>
+    <button class="btn primary full" onclick="addZone()">➕ Add Zone</button>
+    <div id="zoneManagerList" class="zone-grid" style="margin-top:12px">${renderZoneManagerList(zones)}</div>
+  `);
+}
+function renderZoneManagerList(zones){
+  if(!zones.length)return '<div class="empty">No zones configured.</div>';
+  return zones.map(z=>`<div class="zone-chip"><span>${esc(z)}</span><button onclick="deleteZone(${JSON.stringify(z)})">Delete</button></div>`).join("");
+}
+function addZone(){
+  const input=$("newZoneName"); const z=input.value.trim();
+  if(!z){alert("Enter a zone name.");return;}
+  const zones=getZones();
+  if(zones.some(x=>norm(x)===norm(z))){alert("This zone already exists.");return;}
+  zones.push(z); saveZones(zones); showZoneManager();
+}
+function deleteZone(zone){
+  if(getZones().length<=1){alert("Keep at least one zone.");return;}
+  if(!confirm("Delete zone '"+zone+"' from the zone list? Existing vehicle records will not be deleted."))return;
+  saveZones(getZones().filter(z=>z!==zone)); showZoneManager();
+}
+function showTotalVehicles(){
+  const a=records().slice().sort((x,y)=>(x.formNo||0)-(y.formNo||0));
+  openModal("Total Vehicle List ("+a.length+")", a.length ? `
+    <div class="data-table-wrap"><table class="data-table">
+      <thead><tr><th>Serial</th><th>Vehicle</th><th>Zone</th><th>Place</th></tr></thead>
+      <tbody>${a.map(v=>`<tr><td>${esc(v.formNo)}</td><td><b>${esc(v.number)}</b></td><td>${esc(v.zone||"")}</td><td>${esc(v.place||"")}</td></tr>`).join("")}</tbody>
+    </table></div>` : '<div class="empty">No vehicles have been added yet.</div>');
+}
+function showZoneSummary(){
+  const a=records(), zones=getZones();
+  const counts={}; zones.forEach(z=>counts[z]=0);
+  a.forEach(v=>{const z=v.zone||"Unassigned";counts[z]=(counts[z]||0)+1;});
+  const all=Object.keys(counts).sort();
+  openModal("Zone Summary",`
+    <div class="data-table-wrap"><table class="data-table">
+      <thead><tr><th>Zone</th><th>Total Vehicles</th><th>View</th></tr></thead>
+      <tbody>${all.map(z=>`<tr><td><b>${esc(z)}</b></td><td>${counts[z]}</td><td><button class="btn light" style="height:30px;font-size:10px" onclick="showZoneVehicles(${JSON.stringify(z)})">View</button></td></tr>`).join("")}</tbody>
+    </table></div>`);
+}
+function showZoneVehicles(zone){
+  const a=records().filter(v=>(v.zone||"Unassigned")===zone).sort((x,y)=>(x.formNo||0)-(y.formNo||0));
+  openModal("Zone: "+zone+" ("+a.length+")",a.length?`
+    <div class="data-table-wrap"><table class="data-table"><thead><tr><th>Serial</th><th>Vehicle</th><th>Place</th></tr></thead>
+    <tbody>${a.map(v=>`<tr><td>${esc(v.formNo)}</td><td>${esc(v.number)}</td><td>${esc(v.place||"")}</td></tr>`).join("")}</tbody></table></div>`:
+    '<div class="empty">No vehicles in this zone.</div>');
+}
+
+function renderA4(){
+ const slots=Array.from({length:9},(_,i)=>i+1);
+ const a=records();
+ $("a4Columns").innerHTML=slots.map(n=>{
+   const v=a.find(x=>x.formNo===n);
+   return `<div class="col"><div class="col-head">Slot ${n}</div><div class="cell">${v?`<b>${esc(v.number)}</b>${v.zone?`Zone: ${esc(v.zone)}<br>`:""}Place: ${esc(v.place)}`:'<div class="no-data">— Empty —</div>'}</div></div>`;
+ }).join("");
+}
+
+applyTheme();
+apply();
+renderZoneSelect();
+setTimeout(()=>{if(getSupabaseConfig().enabled){ pullUsersFromSupabase(); pullRecordsFromSupabase(); } renderZoneSelect();},400);
+</script>
+</body>
+</html>
